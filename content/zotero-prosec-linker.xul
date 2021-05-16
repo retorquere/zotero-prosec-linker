@@ -22,7 +22,7 @@
       .catch(err => Zotero.debug(`starting zotero-prosec-linker, error: ${err.message}\n${err.stack ||''}`))
 
       .then(() => Zotero.debug('zotero-prosec-linker: loading zoteroPane'))
-      .then(() => zotero_prosec_linker_zoteropane = new Zotero.BetterBibTeX.ZoteroPane(globals))
+      .then(() => zotero_prosec_linker_zoteropane = new Zotero.ProsecLinker.ZoteroPane(globals))
       .then(() => Zotero.debug('zotero-prosec-linker: zoteroPane loaded'))
       .catch(err => Zotero.debug(`zotero-prosec-linker: loading zoteroPane error: ${err.message}\n${err.stack ||''}`))
   </script>
