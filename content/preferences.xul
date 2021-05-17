@@ -4,7 +4,7 @@
 
 <!DOCTYPE window SYSTEM "chrome://zotero-prosec-linker/locale/options.dtd">
 
-<prefwindow id="zotero-prosec-linker-perf" title="&zotero-prosec-linker-preferences;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<prefwindow id="zotero-prosec-linker-perf" title="&prosec.preferences;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <prefpane label="&zotero-prosec-linker-prefpane;" id="zotero-prosec-linker-perfpane">
     <preferences>
       <preference id="pref-zotero-prosec-linker-doi" name="extensions.prosec-linker.doi" type="bool"/>

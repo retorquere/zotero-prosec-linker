@@ -40,7 +40,8 @@
   "xpi": {
     "name": "Prosec Linker for Zotero",
     "updateLink": "https://github.com/retorquere/zotero-prosec-linker/releases/download/v{version}/zotero-zotero-prosec-linker-{version}.xpi",
-    "releaseURL": "https://github.com/retorquere/zotero-prosec-linker/releases/download/release/"
+    "releaseURL": "https://github.com/retorquere/zotero-prosec-linker/releases/download/release/",
+    "optionsURL": "chrome://zotero-prosec-linker/content/preferences.xul"
   },
   "devDependencies": {
     "shell-quote": "^1.7.2"

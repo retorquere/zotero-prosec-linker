@@ -2,28 +2,28 @@
 <?xml-stylesheet href="chrome://zotero-prosec-linker/skin/overlay.css" type="text/css"?>
 <!DOCTYPE window SYSTEM "chrome://zotero-prosec-linker/locale/zotero-prosec-linker.dtd">
 
-<overlay id="zotero-prosec-linker-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script>
     var globals = Function('return this')();
-    var zotero_prosec_linker_zoteropane = null;
+    // var zotero_prosec_linker_zoteropane = null;
   </script>
   <stringbundleset>
     <stringbundle id="zotero-prosec-linker-strings" src="chrome://zotero-prosec-linker/locale/zotero-prosec-linker.properties"/>
   </stringbundleset>
+
+  <menupopup id="menu_ToolsPopup">
+	  <menuitem label="&prosec.preferences;" oncommand="Zotero.ProsecLinker.openPreferenceWindow()"/>
+	</menupopup>
 	
 	<!-- Include the main extension logic -->
   <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-prosec-linker/content/zotero-prosec-linker.js"/>
   <script>
+    // Zotero.debug('prosec linker live')
     (new Promise((resolve, reject) => { window.addEventListener('load', resolve) }))
       .then(() => Zotero.debug('zotero-prosec-linker startup'))
       .then(() => Zotero.ProsecLinker.load(globals))
       .then(() => Zotero.debug('zotero-prosec-linker started'))
       .catch(err => Zotero.debug(`starting zotero-prosec-linker, error: ${err.message}\n${err.stack ||''}`))
-
-      .then(() => Zotero.debug('zotero-prosec-linker: loading zoteroPane'))
-      .then(() => zotero_prosec_linker_zoteropane = new Zotero.ProsecLinker.ZoteroPane(globals))
-      .then(() => Zotero.debug('zotero-prosec-linker: zoteroPane loaded'))
-      .catch(err => Zotero.debug(`zotero-prosec-linker: loading zoteroPane error: ${err.message}\n${err.stack ||''}`))
   </script>
 </overlay>

@@ -27,3 +27,4 @@ class ProsecLinker { // tslint:disable-line:variable-name
 }
 
 Zotero.ProsecLinker = new ProsecLinker
+Zotero.debug(`linker: live: ${typeof Zotero.debug}`)
