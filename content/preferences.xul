@@ -6,17 +6,17 @@
 <prefwindow title="&prosec.preferences;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <prefpane label="&prosec.preferences;">
     <preferences>
-      <preference id="pref-zotero-prosec-linker-doi" name="extensions.prosec-linker.doi" type="bool"/>
-      <preference id="pref-zotero-prosec-linker-doi-url-1" name="extensions.prosec-linker.doi.url-1" type="string"/>
-      <preference id="pref-zotero-prosec-linker-doi-name-1" name="extensions.prosec-linker.doi.name-1" type="string"/>
-      <preference id="pref-zotero-prosec-linker-doi-url-2" name="extensions.prosec-linker.doi.url-2" type="string"/>
-      <preference id="pref-zotero-prosec-linker-doi-name-2" name="extensions.prosec-linker.doi.name-2" type="string"/>
+      <preference id="pref-zotero-prosec-linker-doi" name="extensions.zotero.prosec-linker.doi" type="bool"/>
+      <preference id="pref-zotero-prosec-linker-doi-url-1" name="extensions.zotero.prosec-linker.doi.url.1" type="string"/>
+      <preference id="pref-zotero-prosec-linker-doi-name-1" name="extensions.zotero.prosec-linker.doi.name.1" type="string"/>
+      <preference id="pref-zotero-prosec-linker-doi-url-2" name="extensions.zotero.prosec-linker.doi.url.2" type="string"/>
+      <preference id="pref-zotero-prosec-linker-doi-name-2" name="extensions.zotero.prosec-linker.doi.name.2" type="string"/>
 
-      <preference id="pref-zotero-prosec-linker-title" name="extensions.prosec-linker.title" type="bool"/>
-      <preference id="pref-zotero-prosec-linker-title-url-1" name="extensions.prosec-linker.title.url-1" type="string"/>
-      <preference id="pref-zotero-prosec-linker-title-name-1" name="extensions.prosec-linker.title.name-1" type="string"/>
-      <preference id="pref-zotero-prosec-linker-title-url-2" name="extensions.prosec-linker.title.url-2" type="string"/>
-      <preference id="pref-zotero-prosec-linker-title-name-2" name="extensions.prosec-linker.title.name-2" type="string"/>
+      <preference id="pref-zotero-prosec-linker-title" name="extensions.zotero.prosec-linker.title" type="bool"/>
+      <preference id="pref-zotero-prosec-linker-title-url-1" name="extensions.zotero.prosec-linker.title.url.1" type="string"/>
+      <preference id="pref-zotero-prosec-linker-title-name-1" name="extensions.zotero.prosec-linker.title.name.1" type="string"/>
+      <preference id="pref-zotero-prosec-linker-title-url-2" name="extensions.zotero.prosec-linker.title.url.2" type="string"/>
+      <preference id="pref-zotero-prosec-linker-title-name-2" name="extensions.zotero.prosec-linker.title.name.2" type="string"/>
     </preferences>
 
     <vbox style="overflow:auto;">

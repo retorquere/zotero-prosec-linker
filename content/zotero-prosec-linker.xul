@@ -16,7 +16,7 @@
 	</menupopup>
 
   <menupopup id="zotero-itemmenu">
-    <menuitem id="prosec-link" label="&prosec.link;" tooltiptext="&prosec.link.tooltip;" oncommand="Zotero.ProsecLinker.link();"/>
+    <menuitem id="prosec-link" hidden="true" label="&prosec.link;" tooltiptext="&prosec.link.tooltip;" oncommand="Zotero.ProsecLinker.link();"/>
   </menupopup>
 
 	<!-- Include the main extension logic -->
