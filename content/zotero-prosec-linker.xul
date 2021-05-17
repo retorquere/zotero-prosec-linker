@@ -14,7 +14,11 @@
   <menupopup id="menu_ToolsPopup">
 	  <menuitem label="&prosec.preferences;" oncommand="Zotero.ProsecLinker.openPreferenceWindow()"/>
 	</menupopup>
-	
+
+  <menupopup id="zotero-itemmenu">
+    <menuitem id="prosec-link" label="&prosec.link;" tooltiptext="&prosec.link.tooltip;" oncommand="Zotero.ProsecLinker.link();"/>
+  </menupopup>
+
 	<!-- Include the main extension logic -->
   <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-prosec-linker/content/zotero-prosec-linker.js"/>
