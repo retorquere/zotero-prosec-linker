@@ -1,2 +1,6 @@
 <!ENTITY prosec.title "PROSEC linker for Zotero">
 <!ENTITY prosec.preferences "PROSEC preferences...">
+<!ENTITY prosec.preferences.doi "DOI:">
+<!ENTITY prosec.preferences.name "Title:">
+<!ENTITY prosec.preferences.title "Title:">
+<!ENTITY prosec.preferences.url "URL:">

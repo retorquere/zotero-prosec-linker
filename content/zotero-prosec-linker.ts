@@ -24,6 +24,14 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
     this.strings = globals.document.getElementById('zotero-prosec-linker-strings')
   }
+
+  openPreferenceWindow() {
+    this.globals.window.openDialog(
+      'chrome://zotero-prosec-linker/content/preferences.xul',
+      'prosec-linker-preferences',
+      `chrome,titlebar,toolbar,centerscreen${Zotero.Prefs.get('browser.preferences.instantApply', true) ? 'dialog=no' : 'modal'}`
+    )
+  }
 }
 
 Zotero.ProsecLinker = new ProsecLinker

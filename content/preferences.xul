@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://zotero-platform/content/preferences.css"?>
+<!DOCTYPE window SYSTEM "chrome://zotero-prosec-linker/locale/zotero-prosec-linker.dtd">
 
-<!DOCTYPE window SYSTEM "chrome://zotero-prosec-linker/locale/options.dtd">
-
-<prefwindow id="zotero-prosec-linker-perf" title="&prosec.preferences;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <prefpane label="&zotero-prosec-linker-prefpane;" id="zotero-prosec-linker-perfpane">
+<prefwindow title="&prosec.preferences;" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefpane label="&prosec.preferences;">
     <preferences>
       <preference id="pref-zotero-prosec-linker-doi" name="extensions.prosec-linker.doi" type="bool"/>
       <preference id="pref-zotero-prosec-linker-doi-url-1" name="extensions.prosec-linker.doi.url-1" type="string"/>
@@ -30,16 +29,18 @@
           <column flex="1"/>
         </columns>
         <rows>
-          <label>&prosec.preferences.url;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-doi-url-1"/>
-          <label>&prosec.preferences.name;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-doi-name-1"/>
-        </rows>
-        <rows>
-          <label>&prosec.preferences.url;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-doi-url-2"/>
-          <label>&prosec.preferences.name;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-doi-name-2"/>
+          <row>
+            <label>&prosec.preferences.url;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-doi-url-1"/>
+            <label>&prosec.preferences.name;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-doi-name-1"/>
+          </row>
+          <row>
+            <label>&prosec.preferences.url;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-doi-url-2"/>
+            <label>&prosec.preferences.name;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-doi-name-2"/>
+          </row>
         </rows>
       </grid>
 
@@ -52,18 +53,20 @@
           <column flex="1"/>
         </columns>
         <rows>
-          <label>&prosec.preferences.url;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-title-url-1"/>
-          <label>&prosec.preferences.name;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-title-name-1"/>
+          <row>
+            <label>&prosec.preferences.url;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-title-url-1"/>
+            <label>&prosec.preferences.name;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-title-name-1"/>
+          </row>
+          <row>
+            <label>&prosec.preferences.url;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-title-url-2"/>
+            <label>&prosec.preferences.name;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-title-name-2"/>
+          </row>
         </rows>
-        <rows>
-          <label>&prosec.preferences.url;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-title-url-2"/>
-          <label>&prosec.preferences.citekey.title.name;</label>
-          <textbox flex="1" preference="pref-zotero-prosec-linker-title-name-2"/>
-        </rows>
+      </grid>
     </vbox>
   </prefpane>
-  <script src="chrome://zotero/content/include.js"/>
 </prefwindow>
