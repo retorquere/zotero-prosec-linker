@@ -1,5 +1,3 @@
-const path = require('path')
-const fs = require('fs')
 const esbuild = require('esbuild')
 
 require('zotero-plugin/copy-assets')
