@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && node esbuild.js",
     "postbuild": "zotero-plugin-zipup build zotero-prosec-linker",
     "release": "zotero-plugin-release",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "start": "node start.js"
   },
   "repository": {
     "type": "git",
@@ -24,12 +25,12 @@
   "homepage": "https://github.com/retorquere/zotero-prosec-linker",
   "dependencies": {
     "@types/mocha": "^8.2.2",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
-    "esbuild": "^0.11.21",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
+    "esbuild": "^0.12.0",
     "eslint": "^7.26.0",
-    "eslint-plugin-import": "^2.23.0",
-    "eslint-plugin-jsdoc": "^34.2.2",
+    "eslint-plugin-import": "^2.23.2",
+    "eslint-plugin-jsdoc": "^34.7.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "mkdirp": "^1.0.4",
     "rimraf": "^3.0.2",

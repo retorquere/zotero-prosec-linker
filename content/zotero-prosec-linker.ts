@@ -3,6 +3,7 @@ declare const Zotero: any
 
 const monkey_patch_marker = 'ProsecLinkerMonkeyPatched'
 
+// sorta-typings for Zotero
 type Item = {
   id: number
   isNote: () => boolean
@@ -19,8 +20,8 @@ type Link = {
   url: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function patch(object, method, patcher) {
+// monkey-patch helper
+function patch(object, method, patcher) { // eslint-disable-line @typescript-eslint/no-unused-vars
   if (object[method][monkey_patch_marker]) return
   object[method] = patcher(object[method])
   object[method][monkey_patch_marker] = true
@@ -44,6 +45,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
     this.attachmentTypeID = Zotero.ItemTypes.getID('attachment')
     this.strings = globals.document.getElementById('zotero-prosec-linker-strings')
 
+    // patch menu builder to dynamically show/hide the menu item
     const self = this // eslint-disable-line @typescript-eslint/no-this-alias
     patch(Zotero.getActiveZoteroPane(), 'buildItemContextMenu', original => async function ZoteroPane_buildItemContextMenu() {
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
@@ -60,6 +62,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
     )
   }
 
+  // get the active templates
   private links(): Link[] {
     const links: Link[] = []
     for (const type of ['doi', 'title']) {
@@ -76,6 +79,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
     return links
   }
 
+  // fetch DOI from field if available, fall back to extra field
   private itemDOI(item: Item): string {
     const doi = item.getField('doi')
     if (doi) return doi
@@ -88,37 +92,49 @@ class ProsecLinker { // tslint:disable-line:variable-name
     return ''
   }
 
+  // of the currently selected items, return those that have space for one or more uninstantiated templates
   private candidates(): { item: Item, links: Link[] }[] {
     const templates = this.links()
+    // if no templates are configured, we're done
     if (templates.length === 0) return []
 
+    // get selected items
     const items = (Zotero.getActiveZoteroPane().getSelectedItems() as Item[])
+      // ignore notes, annotations and attachments
       .filter((item: Item) => !(item.isNote() || item.isAttachment() || item.isAnnotation?.()))
+      // add uninstantiated templates
       .map((item: Item) => {
         const fields = {
           title: item.getField('title'),
           doi: this.itemDOI(item),
         }
 
-        const link_attachments: string[] = Zotero.Items.get(item.getAttachments()).filter((att: Item) => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL).map((att: Item) => att.getField('url'))
+        // get existing attachments
+        const link_attachments: string[] = Zotero.Items.get(item.getAttachments())
+          // select only linked-url attachments and get the url
+          .filter((att: Item) => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL).map((att: Item) => att.getField('url'))
 
         return {
           item,
           links: templates
+            // try to fill out the templates
             .map((link: Link): Link => {
               let url = fields[link.type] ? link.url.replace(`{${link.type.toUpperCase()}}`, encodeURIComponent(fields[link.type])) : ''
+              // remove filled out templates that are already instantiated on the item
               if (url && link_attachments.includes(url)) url = ''
               return { ...link, url }
             })
+            // select the filled out templates
             .filter((link: Link) => link.url),
         }
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .filter(({ item, links }: { item: Item, links: Link[] }) => links.length > 0)
+      // select those items that still have links to add
+      .filter(({ item, links }: { item: Item, links: Link[] }) => links.length > 0) // eslint-disable-line @typescript-eslint/no-unused-vars
 
     return items
   }
 
+  // create the link attachments
   public async link() {
     for (const { item, links } of this.candidates()) {
       for (const link of links) {
