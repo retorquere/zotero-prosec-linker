@@ -29,7 +29,7 @@ You have the following `npm` commands available to you:
 
 In order to automatically start Zotero to test the plugin, a one-time setup is required. We're going to create a separate testing profile so it does not pollute your regular Zotero install.
 
-* Start Zotero with the `-P` parameter. Let's say you call this profile `dev`. During creation, make a note of the profile folder (under "Your user settings, preferences and other user-related data will ne stored in:").
+* Start Zotero with the `-P` parameter. Let's say you call this profile `dev`. During creation, make a note of the profile folder (under "Your user settings, preferences and other user-related data will be stored in:").
 * Let Zotero start in that profile, go to `Preferences` -> `Advanced` -> `Files and Folders`, click `Data Directory Location` -> `Custom` and select an *empty* folder. Make a note of this folder. **THIS *Must* be something different that the Folder `Zotero` in your home directory**.
 
 In your copy of this plugin source, create a file named `profile.json` containing
