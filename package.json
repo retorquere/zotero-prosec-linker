@@ -9,7 +9,7 @@
     "postbuild": "zotero-plugin-zipup build zotero-prosec-linker",
     "release": "zotero-plugin-release",
     "postversion": "git push --follow-tags",
-    "start": "node start.js"
+    "start": "zotero-start"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "rimraf": "^3.0.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
-    "zotero-plugin": "^1.0.47"
+    "zotero-plugin": "^1.0.49"
   },
   "xpi": {
     "name": "Prosec Linker for Zotero",
