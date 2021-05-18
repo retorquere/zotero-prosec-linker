@@ -52,4 +52,4 @@ You can release a new version by running `npm version <major|minor|patch>`. This
 
 ## Releasing a debug build
 
-Sometimes you want to release a version for a specific user when doing problem analysis. If the user has opened an GitHub issue, let's say issue number 15, create a branch `gh-15`, make change (for extra loggin for example, or to test a potential fix), and push the changes to github. A GitHub bot will automatically create a plugin build from the sources in that branch, and place a message in the conversation in issue 15 on how to download it.
+Sometimes you want to release a version for a specific user when doing problem analysis. If the user has opened an GitHub issue, let's say issue number 15, create a branch `gh-15`, make the change to the source you want to have the user run (for extra loggin for example, or to test a potential fix), and push the changes to github. A GitHub bot will automatically create a plugin build from the sources in that branch, and place a message in the conversation in issue 15 on how to download it.
