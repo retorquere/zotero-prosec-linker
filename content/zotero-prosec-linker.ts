@@ -14,7 +14,7 @@ type Item = {
   attachmentLinkMode: number
 }
 
-type Link = {
+type Template = {
   type: 'doi' | 'title'
   name: string
   url: string
@@ -49,8 +49,14 @@ class ProsecLinker { // tslint:disable-line:variable-name
     const self = this // eslint-disable-line @typescript-eslint/no-this-alias
     patch(Zotero.getActiveZoteroPane(), 'buildItemContextMenu', original => async function ZoteroPane_buildItemContextMenu() {
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
-      const menuitem = self.globals.document.getElementById('prosec-link')
-      menuitem.hidden = self.candidates().length === 0
+      try {
+        const menuitem = self.globals.document.getElementById('prosec-link')
+        const candidates = self.candidates()
+        menuitem.hidden = candidates.length === 0
+      }
+      catch (err) {
+        self.debug({ error: err.message })
+      }
     })
   }
 
@@ -63,8 +69,8 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   // get the active templates
-  private links(): Link[] {
-    const links: Link[] = []
+  private templates(): Template[] {
+    const links: Template[] = []
     for (const type of ['doi', 'title']) {
       if (!Zotero.Prefs.get(`prosec-linker.${type}`)) continue
 
@@ -79,9 +85,14 @@ class ProsecLinker { // tslint:disable-line:variable-name
     return links
   }
 
+  private debug(o) {
+    Zotero.debug(`:::linker: ${JSON.stringify(o)}`)
+  }
+
+
   // fetch DOI from field if available, fall back to extra field
   private itemDOI(item: Item): string {
-    const doi = item.getField('doi')
+    const doi = item.getField('DOI')
     if (doi) return doi
 
     for (const line of (item.getField('extra') || '').split('\n')) {
@@ -93,8 +104,8 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   // of the currently selected items, return those that have space for one or more uninstantiated templates
-  private candidates(): { item: Item, links: Link[] }[] {
-    const templates = this.links()
+  private candidates(): { item: Item, links: Template[] }[] {
+    const templates = this.templates()
     // if no templates are configured, we're done
     if (templates.length === 0) return []
 
@@ -118,33 +129,38 @@ class ProsecLinker { // tslint:disable-line:variable-name
           item,
           links: templates
             // try to fill out the templates
-            .map((link: Link): Link => {
+            .map((link: Template): Template => {
               let url = fields[link.type] ? link.url.replace(`{${link.type.toUpperCase()}}`, encodeURIComponent(fields[link.type])) : ''
               // remove filled out templates that are already instantiated on the item
               if (url && link_attachments.includes(url)) url = ''
               return { ...link, url }
             })
             // select the filled out templates
-            .filter((link: Link) => link.url),
+            .filter((link: Template) => link.url),
         }
       })
       // select those items that still have links to add
-      .filter(({ item, links }: { item: Item, links: Link[] }) => links.length > 0) // eslint-disable-line @typescript-eslint/no-unused-vars
+      .filter(({ item, links }: { item: Item, links: Template[] }) => links.length > 0) // eslint-disable-line @typescript-eslint/no-unused-vars
 
     return items
   }
 
   // create the link attachments
   public async link() {
-    for (const { item, links } of this.candidates()) {
-      for (const link of links) {
-        const att = new Zotero.Item(this.attachmentTypeID)
-        att.parentItemID = item.id
-        att.setField('title', link.name)
-        att.setField('url', link.url)
-        att.attachmentLinkMode = Zotero.Attachments.LINK_MODE_LINKED_URL
-        await att.saveTx()
+    try {
+      for (const { item, links } of this.candidates()) {
+        for (const link of links) {
+          const att = new Zotero.Item(this.attachmentTypeID)
+          att.parentItemID = item.id
+          att.setField('title', link.name)
+          att.setField('url', link.url)
+          att.attachmentLinkMode = Zotero.Attachments.LINK_MODE_LINKED_URL
+          await att.saveTx()
+        }
       }
+    }
+    catch (err) {
+      this.debug({ error: err.message })
     }
   }
 }
