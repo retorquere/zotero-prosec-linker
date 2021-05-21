@@ -51,11 +51,9 @@ class ProsecLinker { // tslint:disable-line:variable-name
     const self = this // eslint-disable-line @typescript-eslint/no-this-alias
     patch(Zotero.getActiveZoteroPane(), 'buildItemContextMenu', original => async function ZoteroPane_buildItemContextMenu() {
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
-      self.debug({ load: 'buildItemContextMenu' })
       try {
         const menuitem = self.globals.document.getElementById('prosec-link')
         const candidates = self.candidates()
-        self.debug({ candidates: candidates.length })
         menuitem.hidden = candidates.length === 0
       }
       catch (err) {
