@@ -19,11 +19,12 @@
   <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-prosec-linker/content/zotero-prosec-linker.js"/>
   <script>
+    Zotero.debug('zotero-prosec-linker:: startup')
     var globals = Function('return this')();
-    (new Promise((resolve, reject) => { window.addEventListener('load', resolve) }))
-      .then(() => Zotero.debug('zotero-prosec-linker startup'))
-      .then(() => Zotero.ProsecLinker.load(globals))
-      .then(() => Zotero.debug('zotero-prosec-linker started'))
-      .catch(err => Zotero.debug(`starting zotero-prosec-linker, error: ${err.message}\n${err.stack ||''}`))
+    window.addEventListener('load', function() {
+      Zotero.ProsecLinker.load(globals)
+        .then(() => Zotero.debug('zotero-prosec-linker:: started'))
+        .catch(err => Zotero.debug(`starting zotero-prosec-linker::, error: ${err.message}\n${err.stack ||''}`))
+    })
   </script>
 </overlay>

@@ -12,10 +12,12 @@ type Item = {
   getField: (field) => string
   getAttachments: () => number[]
   attachmentLinkMode: number
+  attachmentFilename: string
+  attachmentContentType: string
 }
 
 type Template = {
-  type: 'doi' | 'title'
+  type: 'doi' | 'title' | 'pdf'
   name: string
   url: string
 }
@@ -49,9 +51,11 @@ class ProsecLinker { // tslint:disable-line:variable-name
     const self = this // eslint-disable-line @typescript-eslint/no-this-alias
     patch(Zotero.getActiveZoteroPane(), 'buildItemContextMenu', original => async function ZoteroPane_buildItemContextMenu() {
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
+      self.debug({ load: 'buildItemContextMenu' })
       try {
         const menuitem = self.globals.document.getElementById('prosec-link')
         const candidates = self.candidates()
+        self.debug({ candidates: candidates.length })
         menuitem.hidden = candidates.length === 0
       }
       catch (err) {
@@ -70,23 +74,23 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
   // get the active templates
   private templates(): Template[] {
-    const links: Template[] = []
-    for (const type of ['doi', 'title']) {
+    const templates: Template[] = []
+    for (const type of ['doi', 'title', 'pdf']) {
       if (!Zotero.Prefs.get(`prosec-linker.${type}`)) continue
 
       for (const n of [1, 2]) {
         const url: string = Zotero.Prefs.get(`prosec-linker.${type}.url.${n}`)
         const name: string = Zotero.Prefs.get(`prosec-linker.${type}.name.${n}`)
         if (name && url) {
-          links.push({ type: (type as 'doi' | 'title'), name, url })
+          templates.push({ type: (type as 'doi' | 'title' | 'pdf'), name, url })
         }
       }
     }
-    return links
+    return templates
   }
 
   private debug(o) {
-    Zotero.debug(`:::linker: ${JSON.stringify(o)}`)
+    Zotero.debug(`zotero-prosec-linker:: ${JSON.stringify(o)}`)
   }
 
 
@@ -115,15 +119,16 @@ class ProsecLinker { // tslint:disable-line:variable-name
       .filter((item: Item) => !(item.isNote() || item.isAttachment() || item.isAnnotation?.()))
       // add uninstantiated templates
       .map((item: Item) => {
+        const attachments: Item[] = Zotero.Items.get(item.getAttachments())
+
         const fields = {
           title: item.getField('title'),
           doi: this.itemDOI(item),
+          pdf: attachments.find((att: Item): boolean => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_IMPORTED_FILE && att.attachmentContentType === 'application/pdf')?.attachmentFilename.replace(/\.pdf$/i, ''),
         }
 
-        // get existing attachments
-        const link_attachments: string[] = Zotero.Items.get(item.getAttachments())
-          // select only linked-url attachments and get the url
-          .filter((att: Item) => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL).map((att: Item) => att.getField('url'))
+        // get existing link-attachments
+        const link_attachments: string[] = attachments.filter((att: Item) => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL).map((att: Item) => att.getField('url'))
 
         return {
           item,
