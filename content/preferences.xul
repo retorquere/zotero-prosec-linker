@@ -17,6 +17,10 @@
       <preference id="pref-zotero-prosec-linker-title-name-1" name="extensions.zotero.prosec-linker.title.name.1" type="string"/>
       <preference id="pref-zotero-prosec-linker-title-url-2" name="extensions.zotero.prosec-linker.title.url.2" type="string"/>
       <preference id="pref-zotero-prosec-linker-title-name-2" name="extensions.zotero.prosec-linker.title.name.2" type="string"/>
+
+      <preference id="pref-zotero-prosec-linker-pdf" name="extensions.zotero.prosec-linker.pdf" type="bool"/>
+      <preference id="pref-zotero-prosec-linker-pdf-url-1" name="extensions.zotero.prosec-linker.pdf.url.1" type="string"/>
+      <preference id="pref-zotero-prosec-linker-pdf-name-1" name="extensions.zotero.prosec-linker.pdf.name.1" type="string"/>
     </preferences>
 
     <vbox style="overflow:auto;">
@@ -64,6 +68,24 @@
             <textbox flex="1" preference="pref-zotero-prosec-linker-title-url-2"/>
             <label>&prosec.preferences.name;</label>
             <textbox flex="1" preference="pref-zotero-prosec-linker-title-name-2"/>
+          </row>
+        </rows>
+      </grid>
+
+      <checkbox preference="pref-zotero-prosec-linker-pdf" label="&prosec.preferences.pdf;"/>
+      <grid>
+        <columns>
+          <column/>
+          <column flex="1"/>
+          <column/>
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row>
+            <label>&prosec.preferences.pdf;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-pdf-url-1"/>
+            <label>&prosec.preferences.name;</label>
+            <textbox flex="1" preference="pref-zotero-prosec-linker-pdf-name-1"/>
           </row>
         </rows>
       </grid>

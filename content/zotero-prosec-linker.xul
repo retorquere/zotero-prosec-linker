@@ -3,10 +3,6 @@
 <!DOCTYPE window SYSTEM "chrome://zotero-prosec-linker/locale/zotero-prosec-linker.dtd">
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script>
-    var globals = Function('return this')();
-    // var zotero_prosec_linker_zoteropane = null;
-  </script>
   <stringbundleset>
     <stringbundle id="zotero-prosec-linker-strings" src="chrome://zotero-prosec-linker/locale/zotero-prosec-linker.properties"/>
   </stringbundleset>
@@ -23,11 +19,12 @@
   <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-prosec-linker/content/zotero-prosec-linker.js"/>
   <script>
-    // Zotero.debug('prosec linker live')
-    (new Promise((resolve, reject) => { window.addEventListener('load', resolve) }))
-      .then(() => Zotero.debug('zotero-prosec-linker startup'))
-      .then(() => Zotero.ProsecLinker.load(globals))
-      .then(() => Zotero.debug('zotero-prosec-linker started'))
-      .catch(err => Zotero.debug(`starting zotero-prosec-linker, error: ${err.message}\n${err.stack ||''}`))
+    Zotero.debug('zotero-prosec-linker:: startup')
+    var globals = Function('return this')();
+    window.addEventListener('load', function() {
+      Zotero.ProsecLinker.load(globals)
+        .then(() => Zotero.debug('zotero-prosec-linker:: started'))
+        .catch(err => Zotero.debug(`starting zotero-prosec-linker::, error: ${err.message}\n${err.stack ||''}`))
+    })
   </script>
 </overlay>
