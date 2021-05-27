@@ -111,6 +111,8 @@ class ProsecLinker { // tslint:disable-line:variable-name
     // if no templates are configured, we're done
     if (templates.length === 0) return []
 
+    this.debug({ templates })
+
     // get selected items
     const items = (Zotero.getActiveZoteroPane().getSelectedItems() as Item[])
       // ignore notes, annotations and attachments
@@ -127,6 +129,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
         // get existing link-attachments
         const link_attachments: string[] = attachments.filter((att: Item) => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL).map((att: Item) => att.getField('url'))
+        this.debug({ link_attachments, fields })
 
         return {
           item,
@@ -136,6 +139,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
               let url = fields[link.type] ? link.url.replace(`{${link.type.toUpperCase()}}`, encodeURIComponent(fields[link.type])) : ''
               // remove filled out templates that are already instantiated on the item
               if (url && link_attachments.includes(url)) url = ''
+              this.debug({ link: { ...link, url } })
               return { ...link, url }
             })
             // select the filled out templates
