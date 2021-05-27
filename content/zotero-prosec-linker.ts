@@ -88,7 +88,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   private debug(o) {
-    Zotero.debug(`zotero-prosec-linker:: ${JSON.stringify(o)}`)
+    Zotero.debug(`zotero-prosec-linker:: ${JSON.stringify(o, null, 2)}`)
   }
 
 
@@ -129,7 +129,15 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
         // get existing link-attachments
         const link_attachments: string[] = attachments.filter((att: Item) => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL).map((att: Item) => att.getField('url'))
-        this.debug({ link_attachments, fields })
+        this.debug({
+          link_attachments,
+          fields,
+          attachments: attachments.map((att: Item) => ({
+            linkMode: att.attachmentLinkMode,
+            contentType: att.attachmentContentType,
+            filename: att.attachmentFilename,
+          })),
+        })
 
         return {
           item,
