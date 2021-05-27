@@ -29,6 +29,21 @@ function patch(object, method, patcher) { // eslint-disable-line @typescript-esl
   object[method][monkey_patch_marker] = true
 }
 
+function isURL(att: Item): boolean {
+  return att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL
+}
+
+function isPDF(att: Item): boolean {
+  switch (att.attachmentLinkMode) {
+    case Zotero.Attachments.LINK_MODE_IMPORTED_FILE:
+    case Zotero.Attachments.LINK_MODE_IMPORTED_URL:
+    case Zotero.Attachments.LINK_MODE_LINKED_FILE:
+      return att.attachmentContentType === 'application/pdf'
+    default:
+      return false
+  }
+}
+
 class ProsecLinker { // tslint:disable-line:variable-name
   private initialized = false
   private globals: Record<string, any>
@@ -124,11 +139,11 @@ class ProsecLinker { // tslint:disable-line:variable-name
         const fields = {
           title: item.getField('title'),
           doi: this.itemDOI(item),
-          pdf: attachments.find((att: Item): boolean => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_IMPORTED_FILE && att.attachmentContentType === 'application/pdf')?.attachmentFilename.replace(/\.pdf$/i, ''),
+          pdf: attachments.find(isPDF)?.attachmentFilename.replace(/\.pdf$/i, ''),
         }
 
         // get existing link-attachments
-        const link_attachments: string[] = attachments.filter((att: Item) => att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL).map((att: Item) => att.getField('url'))
+        const link_attachments: string[] = attachments.filter(isURL).map((att: Item) => att.getField('url'))
         this.debug({
           link_attachments,
           fields,
