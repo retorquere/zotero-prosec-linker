@@ -1,5 +1,6 @@
 content	zotero-prosec-linker				content/
 locale	zotero-prosec-linker	en-US		locale/en-US/
+locale	zotero-prosec-linker	de-DE		locale/de-DE/
 skin	zotero-prosec-linker	default		skin/
 
 overlay	chrome://zotero/content/zoteroPane.xul	chrome://zotero-prosec-linker/content/zotero-prosec-linker.xul
