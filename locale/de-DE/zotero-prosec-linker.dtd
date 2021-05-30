@@ -1,4 +1,4 @@
-<!ENTITY prosec.title "PROSEC linker for Zotero">
+<!ENTITY prosec.title "PROSEC Linker für Zotero">
 <!ENTITY prosec.preferences "PROSEC preferences...">
 
 <!ENTITY prosec.preferences.doi "DOI:">
@@ -8,5 +8,5 @@
 <!ENTITY prosec.preferences.name "Title:">
 <!ENTITY prosec.preferences.url "URL:">
 
-<!ENTITY prosec.link "Add PROSEC links">
-<!ENTITY prosec.link.tooltip "Add PROSEC links">
+<!ENTITY prosec.link "Hinzufügen PROSEC links">
+<!ENTITY prosec.link.tooltip "Hinzufügen PROSEC links">
