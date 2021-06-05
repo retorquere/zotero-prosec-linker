@@ -5,6 +5,8 @@ Install by downloading the [latest version](https://github.com/retorquere/zotero
 
 PROSEC linker for Zotero
 
+Add url templates with `{PDF}`/`{TITLE}`/`{DOI}`, right-click some items, and select Create Prosec Links
+
 ## Development
 
 This plugin was written using typescript. Typescript is javascript,
