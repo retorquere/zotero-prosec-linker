@@ -9,5 +9,6 @@
 <!ENTITY prosec.preferences.name "Title:">
 <!ENTITY prosec.preferences.url "URL:">
 
-<!ENTITY prosec.link "Add/remove PROSEC links">
+<!ENTITY prosec.link.add "Add PROSEC links">
+<!ENTITY prosec.link.delete "Remove PROSEC links">
 <!ENTITY prosec.link.tooltip "Add/remove PROSEC links">

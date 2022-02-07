@@ -18,12 +18,12 @@ type Item = {
 }
 
 type Template = {
-  action: 'add' | 'delete'
   type: 'doi' | 'title' | 'pdf'
   name: string
   url: string
 }
 
+type ActionKind = 'add' | 'delete'
 type Action = {
   action: 'add'
   name: string
@@ -81,9 +81,12 @@ class ProsecLinker { // tslint:disable-line:variable-name
       self.debug('patched menu')
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
       try {
-        const menuitem = self.globals.document.getElementById('prosec-link')
-        const actions = self.actions()
-        menuitem.hidden = actions.length === 0
+        const actions = {
+          add: self.actions('add'),
+          delete: self.actions('delete'),
+        }
+        self.globals.document.getElementById('prosec-link-add').hidden = actions.add.length === 0
+        self.globals.document.getElementById('prosec-link-delete').hidden = actions.delete.length === 0
         self.debug({ patched: 'menu', actions })
       }
       catch (err) {
@@ -102,18 +105,17 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   // get the active templates
-  private templates(): Template[] {
+  private templates(mode: ActionKind): Template[] {
     const templates: Template[] = []
     for (const type of ['doi', 'title', 'pdf']) {
       if (!Zotero.Prefs.get(`prosec-linker.${type}`)) continue
 
       for (const n of [1, 2]) {
-        const del: string = Zotero.Prefs.get(`prosec-linker.${type}.delete.${n}`)
+        if (mode === 'delete' && !Zotero.Prefs.get(`prosec-linker.${type}.delete.${n}`)) continue
+
         const url: string = Zotero.Prefs.get(`prosec-linker.${type}.url.${n}`)
         const name: string = Zotero.Prefs.get(`prosec-linker.${type}.name.${n}`)
-        if (name && url) {
-          templates.push({ type: (type as 'doi' | 'title' | 'pdf'), name, url, action: del ? 'delete' : 'add' })
-        }
+        if (name && url) templates.push({ type: (type as 'doi' | 'title' | 'pdf'), name, url })
       }
     }
     return templates
@@ -138,13 +140,11 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   // of the currently selected items, return those that have space for one or more uninstantiated templates
-  private actions(): { item: Item, actions: Action[] }[] {
-    const templates = this.templates()
+  private actions(mode: ActionKind): { item: Item, actions: Action[] }[] {
+    const templates = this.templates(mode)
     this.debug({ templates })
     // if no templates are configured, we're done
     if (templates.length === 0) return []
-
-    this.debug({ templates })
 
     // get selected items
     const actions = (Zotero.getActiveZoteroPane().getSelectedItems() as Item[])
@@ -185,15 +185,14 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
               if (!url) return null // no template ?
 
-              if (template.action === 'add' && !link_attachments[url]) {
+              if (mode === 'add' && !link_attachments[url]) {
                 return {
                   action: 'add',
                   url,
                   name: template.name,
                 }
               }
-
-              if (template.action === 'delete' && link_attachments[url]) {
+              else if (mode === 'delete' && link_attachments[url]) {
                 return {
                   action: 'delete',
                   attachment: link_attachments[url],
@@ -213,25 +212,31 @@ class ProsecLinker { // tslint:disable-line:variable-name
     return actions
   }
 
-  // create the link attachments
-  public async link() {
-    let att
+  public async add() {
     try {
-      for (const { item, actions } of this.actions()) {
+      for (const { item, actions } of this.actions('add')) {
         for (const action of actions) {
-          switch (action.action) {
-            case 'add':
-              att = new Zotero.Item(this.attachmentTypeID)
-              att.parentItemID = item.id
-              att.setField('title', action.name)
-              att.setField('url', action.url)
-              att.attachmentLinkMode = Zotero.Attachments.LINK_MODE_LINKED_URL
-              await att.saveTx()
-              break
-            case 'delete':
-              await Zotero.Items.trashTx(action.attachment.id)
-              break
+          if (action.action === 'add') {
+            const att = new Zotero.Item(this.attachmentTypeID)
+            att.parentItemID = item.id
+            att.setField('title', action.name)
+            att.setField('url', action.url)
+            att.attachmentLinkMode = Zotero.Attachments.LINK_MODE_LINKED_URL
+            await att.saveTx()
           }
+        }
+      }
+    }
+    catch (err) {
+      this.debug({ error: err.message })
+    }
+  }
+
+  public async delete() {
+    try {
+      for (const { actions } of this.actions('delete')) {
+        for (const action of actions) {
+          if (action.action === 'delete') await Zotero.Items.trashTx(action.attachment.id)
         }
       }
     }
