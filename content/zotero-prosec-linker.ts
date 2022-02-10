@@ -181,7 +181,8 @@ class ProsecLinker { // tslint:disable-line:variable-name
           actions: templates
             // try to fill out the templates
             .map((template: Template): Action => {
-              const url = fields[template.type] ? template.url.replace(`{${template.type.toUpperCase()}}`, encodeURIComponent(fields[template.type])) : ''
+              this.debug({ url: template.url, marker: template.type.toUpperCase(), replacement: fields[template.type] })
+              const url = fields[template.type] ? template.url.replace(template.type.toUpperCase(), encodeURIComponent(fields[template.type])) : ''
 
               if (!url) return null // no template ?
 
