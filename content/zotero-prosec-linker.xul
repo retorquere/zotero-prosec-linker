@@ -17,7 +17,6 @@
   </menupopup>
 
   <!-- Include the main extension logic -->
-  <script src="chrome://zotero/content/include.js"/>
   <script src="chrome://zotero-prosec-linker/content/zotero-prosec-linker.js"/>
   <script>
     Zotero.debug('zotero-prosec-linker:: startup')
