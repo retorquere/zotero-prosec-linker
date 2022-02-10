@@ -12,7 +12,8 @@
   </menupopup>
 
   <menupopup id="zotero-itemmenu">
-    <menuitem id="prosec-link" hidden="true" label="&prosec.link;" tooltiptext="&prosec.link.tooltip;" oncommand="Zotero.ProsecLinker.link();"/>
+    <menuitem id="prosec-link-add" hidden="true" label="&prosec.link.add;" tooltiptext="&prosec.link.tooltip;" oncommand="Zotero.ProsecLinker.add();"/>
+    <menuitem id="prosec-link-delete" hidden="true" label="&prosec.link.delete;" tooltiptext="&prosec.link.tooltip;" oncommand="Zotero.ProsecLinker.delete();"/>
   </menupopup>
 
   <!-- Include the main extension logic -->

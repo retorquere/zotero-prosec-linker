@@ -4,9 +4,11 @@
 <!ENTITY prosec.preferences.doi "DOI:">
 <!ENTITY prosec.preferences.title "Title:">
 <!ENTITY prosec.preferences.pdf "PDF:">
+<!ENTITY prosec.preferences.delete "delete">
 
 <!ENTITY prosec.preferences.name "Title:">
 <!ENTITY prosec.preferences.url "URL:">
 
-<!ENTITY prosec.link "Add PROSEC links">
-<!ENTITY prosec.link.tooltip "Add PROSEC links">
+<!ENTITY prosec.link.add "Add PROSEC links">
+<!ENTITY prosec.link.delete "Remove PROSEC links">
+<!ENTITY prosec.link.tooltip "Add/remove PROSEC links">

@@ -6,6 +6,7 @@ const monkey_patch_marker = 'ProsecLinkerMonkeyPatched'
 // sorta-typings for Zotero
 type Item = {
   id: number
+  isRegularItem: () => boolean
   isNote: () => boolean
   isAnnotation?: () => boolean
   isAttachment?: () => boolean
@@ -22,8 +23,18 @@ type Template = {
   url: string
 }
 
+type ActionKind = 'add' | 'delete'
+type Action = {
+  action: 'add'
+  name: string
+  url: string
+} | {
+  action: 'delete'
+  attachment: Item
+}
+
 // monkey-patch helper
-function patch(object, method, patcher) { // eslint-disable-line @typescript-eslint/no-unused-vars
+function patch(object, method, patcher) {
   if (object[method][monkey_patch_marker]) return
   object[method] = patcher(object[method])
   object[method][monkey_patch_marker] = true
@@ -52,6 +63,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
   // eslint-disable-next-line @typescript-eslint/require-await
   public async load(globals: Record<string, any>) {
+    this.debug('loading')
     this.globals = globals
 
     if (this.initialized) return
@@ -62,19 +74,26 @@ class ProsecLinker { // tslint:disable-line:variable-name
     this.attachmentTypeID = Zotero.ItemTypes.getID('attachment')
     this.strings = globals.document.getElementById('zotero-prosec-linker-strings')
 
+    this.debug('patching')
     // patch menu builder to dynamically show/hide the menu item
     const self = this // eslint-disable-line @typescript-eslint/no-this-alias
     patch(Zotero.getActiveZoteroPane(), 'buildItemContextMenu', original => async function ZoteroPane_buildItemContextMenu() {
+      self.debug('patched menu')
       await original.apply(this, arguments) // eslint-disable-line prefer-rest-params
       try {
-        const menuitem = self.globals.document.getElementById('prosec-link')
-        const candidates = self.candidates()
-        menuitem.hidden = candidates.length === 0
+        const actions = {
+          add: self.actions('add'),
+          delete: self.actions('delete'),
+        }
+        self.globals.document.getElementById('prosec-link-add').hidden = actions.add.length === 0
+        self.globals.document.getElementById('prosec-link-delete').hidden = actions.delete.length === 0
+        self.debug({ patched: 'menu', actions })
       }
       catch (err) {
         self.debug({ error: err.message })
       }
     })
+    this.debug('patched, loaded')
   }
 
   public openPreferenceWindow() {
@@ -86,17 +105,17 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   // get the active templates
-  private templates(): Template[] {
+  private templates(mode: ActionKind): Template[] {
     const templates: Template[] = []
     for (const type of ['doi', 'title', 'pdf']) {
       if (!Zotero.Prefs.get(`prosec-linker.${type}`)) continue
 
       for (const n of [1, 2]) {
+        if (mode === 'delete' && !Zotero.Prefs.get(`prosec-linker.${type}.delete.${n}`)) continue
+
         const url: string = Zotero.Prefs.get(`prosec-linker.${type}.url.${n}`)
         const name: string = Zotero.Prefs.get(`prosec-linker.${type}.name.${n}`)
-        if (name && url) {
-          templates.push({ type: (type as 'doi' | 'title' | 'pdf'), name, url })
-        }
+        if (name && url) templates.push({ type: (type as 'doi' | 'title' | 'pdf'), name, url })
       }
     }
     return templates
@@ -121,17 +140,16 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   // of the currently selected items, return those that have space for one or more uninstantiated templates
-  private candidates(): { item: Item, links: Template[] }[] {
-    const templates = this.templates()
+  private actions(mode: ActionKind): { item: Item, actions: Action[] }[] {
+    const templates = this.templates(mode)
+    this.debug({ templates })
     // if no templates are configured, we're done
     if (templates.length === 0) return []
 
-    this.debug({ templates })
-
     // get selected items
-    const items = (Zotero.getActiveZoteroPane().getSelectedItems() as Item[])
+    const actions = (Zotero.getActiveZoteroPane().getSelectedItems() as Item[])
       // ignore notes, annotations and attachments
-      .filter((item: Item) => !(item.isNote() || item.isAttachment() || item.isAnnotation?.()))
+      .filter((item: Item) => item.isRegularItem())
       // add uninstantiated templates
       .map((item: Item) => {
         const attachments: Item[] = Zotero.Items.get(item.getAttachments())
@@ -143,9 +161,13 @@ class ProsecLinker { // tslint:disable-line:variable-name
         }
 
         // get existing link-attachments
-        const link_attachments: string[] = attachments.filter(isURL).map((att: Item) => att.getField('url'))
+        const link_attachments: Record<string, Item> = attachments.filter(isURL).reduce((acc: Record<string, Item>, att: Item) => {
+          acc[att.getField('url')] = att
+          return acc
+        }, {})
+
         this.debug({
-          link_attachments,
+          link_attachments : Object.keys(link_attachments),
           fields,
           attachments: attachments.map((att: Item) => ({
             linkMode: att.attachmentLinkMode,
@@ -156,36 +178,65 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
         return {
           item,
-          links: templates
+          actions: templates
             // try to fill out the templates
-            .map((link: Template): Template => {
-              let url = fields[link.type] ? link.url.replace(`{${link.type.toUpperCase()}}`, encodeURIComponent(fields[link.type])) : ''
-              // remove filled out templates that are already instantiated on the item
-              if (url && link_attachments.includes(url)) url = ''
-              this.debug({ link: { ...link, url } })
-              return { ...link, url }
+            .map((template: Template): Action => {
+              const url = fields[template.type] ? template.url.replace(`{${template.type.toUpperCase()}}`, encodeURIComponent(fields[template.type])) : ''
+
+              if (!url) return null // no template ?
+
+              if (mode === 'add' && !link_attachments[url]) {
+                return {
+                  action: 'add',
+                  url,
+                  name: template.name,
+                }
+              }
+              else if (mode === 'delete' && link_attachments[url]) {
+                return {
+                  action: 'delete',
+                  attachment: link_attachments[url],
+                }
+              }
+
+              return null
             })
             // select the filled out templates
-            .filter((link: Template) => link.url),
+            .filter((action: Action) => action),
         }
       })
-      // select those items that still have links to add
-      .filter(({ item, links }: { item: Item, links: Template[] }) => links.length > 0) // eslint-disable-line @typescript-eslint/no-unused-vars
+      // select those items that still actions to perform
+      .filter((item: { item: Item, actions: Action[] }) => item.actions.length > 0) // eslint-disable-line @typescript-eslint/no-unused-vars
 
-    return items
+    this.debug(actions)
+    return actions
   }
 
-  // create the link attachments
-  public async link() {
+  public async add() {
     try {
-      for (const { item, links } of this.candidates()) {
-        for (const link of links) {
-          const att = new Zotero.Item(this.attachmentTypeID)
-          att.parentItemID = item.id
-          att.setField('title', link.name)
-          att.setField('url', link.url)
-          att.attachmentLinkMode = Zotero.Attachments.LINK_MODE_LINKED_URL
-          await att.saveTx()
+      for (const { item, actions } of this.actions('add')) {
+        for (const action of actions) {
+          if (action.action === 'add') {
+            const att = new Zotero.Item(this.attachmentTypeID)
+            att.parentItemID = item.id
+            att.setField('title', action.name)
+            att.setField('url', action.url)
+            att.attachmentLinkMode = Zotero.Attachments.LINK_MODE_LINKED_URL
+            await att.saveTx()
+          }
+        }
+      }
+    }
+    catch (err) {
+      this.debug({ error: err.message })
+    }
+  }
+
+  public async delete() {
+    try {
+      for (const { actions } of this.actions('delete')) {
+        for (const action of actions) {
+          if (action.action === 'delete') await Zotero.Items.trashTx(action.attachment.id)
         }
       }
     }
