@@ -1,3 +1,4 @@
+import { DebugLog } from 'zotero-plugin/debug-log'
 declare const Zotero: any
 // declare const Components: any
 
@@ -70,6 +71,8 @@ class ProsecLinker { // tslint:disable-line:variable-name
     this.initialized = true
 
     await Zotero.Schema.schemaUpdatePromise
+
+    DebugLog.register('Prosec linker', ['extensions.zotero.prosec-linker.'])
 
     const urls = this.templates('add', false).map(template => template.url).filter(url => url)
     if (urls.length) {
