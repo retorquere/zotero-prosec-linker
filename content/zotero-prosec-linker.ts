@@ -71,6 +71,22 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
     await Zotero.Schema.schemaUpdatePromise
 
+    const urls = this.templates('add', false).map(template => template.url).filter(url => url)
+    if (urls.length) {
+      const broken = `
+        SELECT item.itemID AS itemID
+        FROM items item
+        JOIN itemAttachments att ON att.itemID = item.itemID AND att.linkMode = ?
+
+        JOIN itemTypeFields itfURL ON  item.itemTypeID = itfURL.itemTypeID
+        JOIN fields fURL on fURL.fieldID = itfURL.fieldID AND fURL.fieldName = 'url'
+        JOIN itemData idURL on idURL.itemID = item.itemID AND idURL.fieldID = fURL.fieldID
+        JOIN itemDataValues idvURL ON idvURL.valueID = idURL.valueID AND idvURL.value IN (${new Array(urls.length).fill('?').join(', ')})
+      `.replace(/\n/g, ' ')
+      const atts = await Zotero.DB.columnQueryAsync(broken, [Zotero.Attachments.LINK_MODE_LINKED_URL].concat(urls))
+      if (atts.length) await Zotero.Items.trashTx(atts)
+    }
+
     this.attachmentTypeID = Zotero.ItemTypes.getID('attachment')
     this.strings = globals.document.getElementById('zotero-prosec-linker-strings')
 
@@ -105,10 +121,10 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 
   // get the active templates
-  private templates(mode: ActionKind): Template[] {
+  private templates(mode: ActionKind, active = true): Template[] {
     const templates: Template[] = []
     for (const type of ['doi', 'title', 'pdf']) {
-      if (!Zotero.Prefs.get(`prosec-linker.${type}`)) continue
+      if (active && !Zotero.Prefs.get(`prosec-linker.${type}`)) continue
 
       for (const n of [1, 2]) {
         if (mode === 'delete' && !Zotero.Prefs.get(`prosec-linker.${type}.delete.${n}`)) continue
