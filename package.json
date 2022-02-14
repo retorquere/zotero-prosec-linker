@@ -1,6 +1,6 @@
 {
   "name": "zotero-prosec-linker",
-  "version": "1.0.3",
+  "version": "1.1.1",
   "description": "PROSEC linker for Zotero",
   "scripts": {
     "lint": "eslint . --ext .ts --cache --cache-location .eslintcache/",
