@@ -39,7 +39,7 @@
     "zotero-plugin": "^1.2.1"
   },
   "xpi": {
-    "name": "Prosec Linker for Zotero",
+    "name": "PROSEC Linker for Zotero",
     "updateLink": "https://github.com/retorquere/zotero-prosec-linker/releases/download/v{version}/zotero-prosec-linker-{version}.xpi",
     "releaseURL": "https://github.com/retorquere/zotero-prosec-linker/releases/download/release/",
     "optionsURL": "chrome://zotero-prosec-linker/content/preferences.xul"

@@ -74,7 +74,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
     await Zotero.Schema.schemaUpdatePromise
 
-    DebugLog.register('Prosec linker', ['extensions.zotero.prosec-linker.'])
+    DebugLog.register('PROSEC linker', ['extensions.zotero.prosec-linker.'])
 
     const urls = this.templates('add', true).map(template => template.url).filter(url => url)
     if (urls.length) {
@@ -295,4 +295,4 @@ class ProsecLinker { // tslint:disable-line:variable-name
   }
 }
 
-Zotero.ProsecLinker = new ProsecLinker
+Zotero.ProsecLinker = Zotero.ProsecLinker || new ProsecLinker

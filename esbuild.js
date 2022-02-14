@@ -11,8 +11,6 @@ async function build() {
     target: ['firefox60'],
     entryPoints: [ 'content/zotero-prosec-linker.ts' ],
     outdir: 'build/content',
-    banner: { js: 'if (!Zotero.ProsecLinker) {\n' },
-    footer: { js: '\n}' },
   })
 }
 
