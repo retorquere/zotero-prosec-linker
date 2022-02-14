@@ -41,6 +41,8 @@ function patch(object, method, patcher) {
   object[method][monkey_patch_marker] = true
 }
 
+const seconds = 1000
+
 function isURL(att: Item): boolean {
   return att.attachmentLinkMode === Zotero.Attachments.LINK_MODE_LINKED_URL
 }
@@ -74,7 +76,7 @@ class ProsecLinker { // tslint:disable-line:variable-name
 
     DebugLog.register('Prosec linker', ['extensions.zotero.prosec-linker.'])
 
-    const urls = this.templates('add', false).map(template => template.url).filter(url => url)
+    const urls = this.templates('add', true).map(template => template.url).filter(url => url)
     if (urls.length) {
       const broken = `
         SELECT item.itemID AS itemID
@@ -123,25 +125,35 @@ class ProsecLinker { // tslint:disable-line:variable-name
     )
   }
 
+  private marker(type: string) {
+    return `{${type.toUpperCase()}}`
+  }
+
   // get the active templates
-  private templates(mode: ActionKind, active = true): Template[] {
+  private templates(mode: ActionKind, include_disabled = false): Template[] {
     const templates: Template[] = []
     for (const type of ['doi', 'title', 'pdf']) {
-      if (active && !Zotero.Prefs.get(`prosec-linker.${type}`)) continue
+      if (!include_disabled && !Zotero.Prefs.get(`prosec-linker.${type}`)) continue
 
       for (const n of [1, 2]) {
         if (mode === 'delete' && !Zotero.Prefs.get(`prosec-linker.${type}.delete.${n}`)) continue
 
         const url: string = Zotero.Prefs.get(`prosec-linker.${type}.url.${n}`)
         const name: string = Zotero.Prefs.get(`prosec-linker.${type}.name.${n}`)
-        if (name && url) templates.push({ type: (type as 'doi' | 'title' | 'pdf'), name, url })
+        if (!name || !url) continue
+        if (!url.includes(this.marker(type))) {
+          this.flash('invalid PROSEC linker template', `invalid PROSEC linker template: ${url} does not include ${this.marker(type)}`)
+          continue
+        }
+
+        templates.push({ type: (type as 'doi' | 'title' | 'pdf'), name, url })
       }
     }
     return templates
   }
 
-  private debug(o) {
-    Zotero.debug(`zotero-prosec-linker:: ${JSON.stringify(o, null, 2)}`)
+  private debug(o, msg = '') {
+    Zotero.debug(`zotero-prosec-linker:: ${msg}${JSON.stringify(o, null, 2)}`)
   }
 
 
@@ -200,8 +212,8 @@ class ProsecLinker { // tslint:disable-line:variable-name
           actions: templates
             // try to fill out the templates
             .map((template: Template): Action => {
-              this.debug({ url: template.url, marker: template.type.toUpperCase(), replacement: fields[template.type] })
-              const url = fields[template.type] ? template.url.replace(template.type.toUpperCase(), encodeURIComponent(fields[template.type])) : ''
+              this.debug({ url: template.url, marker: this.marker(template.type), replacement: fields[template.type] })
+              const url = fields[template.type] ? template.url.replace(this.marker(template.type), encodeURIComponent(fields[template.type])) : ''
 
               if (!url) return null // no template ?
 
@@ -262,6 +274,23 @@ class ProsecLinker { // tslint:disable-line:variable-name
     }
     catch (err) {
       this.debug({ error: err.message })
+    }
+  }
+
+  // eslint-disable-next-line no-magic-numbers
+  flash(title: string, body?: string, timeout = 8): void {
+    try {
+      this.debug({title, body}, 'flash: ')
+      const pw = new Zotero.ProgressWindow()
+      pw.changeHeadline(`Better BibTeX: ${title}`)
+      if (!body) body = title
+      if (Array.isArray(body)) body = body.join('\n')
+      pw.addDescription(body)
+      pw.show()
+      pw.startCloseTimer(timeout * seconds)
+    }
+    catch (err) {
+      this.debug({title, body, err: err.message}, 'flash failed:')
     }
   }
 }
