@@ -1,6 +1,6 @@
 {
   "name": "zotero-prosec-linker",
-  "version": "1.1.2",
+  "version": "1.0.3",
   "description": "PROSEC linker for Zotero",
   "scripts": {
     "lint": "eslint . --ext .ts --cache --cache-location .eslintcache/",
@@ -28,18 +28,18 @@
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "esbuild": "^0.14.21",
-    "eslint": "^8.8.0",
+    "eslint": "^8.9.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^37.8.2",
+    "eslint-plugin-jsdoc": "^37.9.1",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "mkdirp": "^1.0.4",
     "rimraf": "^3.0.2",
     "ts-node": "^10.5.0",
     "typescript": "^4.5.5",
-    "zotero-plugin": "^1.0.64"
+    "zotero-plugin": "^1.2.1"
   },
   "xpi": {
-    "name": "Prosec Linker for Zotero",
+    "name": "PROSEC Linker for Zotero",
     "updateLink": "https://github.com/retorquere/zotero-prosec-linker/releases/download/v{version}/zotero-prosec-linker-{version}.xpi",
     "releaseURL": "https://github.com/retorquere/zotero-prosec-linker/releases/download/release/",
     "optionsURL": "chrome://zotero-prosec-linker/content/preferences.xul"

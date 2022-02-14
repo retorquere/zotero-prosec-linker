@@ -1,4 +1,4 @@
-Prosec Linker
+PROSEC Linker
 =================
 
 Install by downloading the [latest version](https://github.com/retorquere/zotero-prosec-linker/releases/latest)
